@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Marina Porto Antico - Gestionale Turni Cloud</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
@@ -53,7 +53,86 @@ td:first-child,th:first-child{text-align:left;font-weight:bold;min-width:120px}
 }
 .notify-dot.show{display:block}
 
-@media(max-width:900px){ table{display: block; overflow-x: auto;} }
+/* Scroll orizzontale tabelle + prima colonna nomi bloccata */
+#plannerContainer,
+#staffContainer{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:14px;
+}
+
+/* Le tabelle possono allargarsi oltre lo schermo */
+#plannerContainer table,
+#staffContainer table{
+  min-width:100%;
+  width:max-content;
+  overflow:visible;
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+/* Evita che giorni/orari vadano a capo mentre scorri */
+#plannerContainer th,
+#plannerContainer td,
+#staffContainer th,
+#staffContainer td{
+  white-space:nowrap;
+}
+
+/* Prima colonna bloccata: nomi sempre visibili */
+#plannerContainer th:first-child,
+#plannerContainer td:first-child,
+#staffContainer th:first-child,
+#staffContainer td:first-child{
+  position:sticky;
+  left:0;
+  z-index:4;
+  background:white;
+  box-shadow:4px 0 8px rgba(15,23,42,.10);
+}
+
+/* Intestazione prima colonna */
+#plannerContainer th:first-child,
+#staffContainer th:first-child{
+  z-index:6;
+  background:#082b4d;
+  color:white;
+}
+
+/* Mantiene i colori alternati nella tabella manager anche sulla colonna bloccata */
+#plannerContainer .manager-table tbody tr:nth-child(odd) td:first-child{
+  background:#ffffff;
+}
+
+#plannerContainer .manager-table tbody tr:nth-child(even) td:first-child{
+  background:#eef7ff;
+}
+
+#plannerContainer .manager-table tbody tr:hover td:first-child{
+  background:#dbeafe;
+}
+
+/* Mantiene evidenziata la riga del dipendente loggato nella vista staff */
+#staffContainer tr[style*="background:#f0f7ff"] td:first-child{
+  background:#f0f7ff;
+}
+
+/* Miglioria per iPhone/iPad */
+@media(max-width:1200px){
+  #plannerContainer th:first-child,
+  #plannerContainer td:first-child,
+  #staffContainer th:first-child,
+  #staffContainer td:first-child{
+    min-width:135px;
+    max-width:135px;
+  }
+
+  #plannerContainer table,
+  #staffContainer table{
+    min-width:850px;
+  }
+}
 
 .special-day-col{
   background:#fff7ed!important;
@@ -76,22 +155,232 @@ th.special-day-col{
 .manager-table tbody tr:hover{
   background:#dbeafe;
 }
+/* Ottimizzazione leggera per tablet e cellulare */
+@media(max-width:1100px){
+
+  body{
+    padding:12px;
+  }
+
+  .card{
+    padding:14px;
+    border-radius:14px;
+  }
+
+  h1{
+    font-size:24px;
+    line-height:1.15;
+  }
+
+  h2{
+    font-size:20px;
+  }
+
+  .sub{
+    font-size:13px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .tabs,
+  .controls{
+    gap:7px;
+    margin-bottom:12px;
+  }
+
+  button{
+    min-height:44px;
+    padding:10px 12px;
+    font-size:14px;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px;
+  }
+
+  .select-mini{
+    font-size:16px;
+    padding:8px;
+    min-width:122px;
+  }
+
+  .manual-btn{
+    font-size:12px;
+    padding:7px 8px;
+  }
+
+  th,
+  td{
+    padding:10px 8px;
+    font-size:13px;
+  }
+
+  .badge{
+    padding:8px 10px;
+    font-size:13px;
+    min-width:68px;
+  }
+
+  #plannerContainer,
+  #staffContainer{
+    margin-left:-2px;
+    margin-right:-2px;
+    padding-bottom:6px;
+  }
+
+  #plannerContainer th:first-child,
+  #plannerContainer td:first-child,
+  #staffContainer th:first-child,
+  #staffContainer td:first-child{
+    min-width:138px;
+    max-width:138px;
+  }
+
+  .toast{
+    left:12px;
+    right:12px;
+    bottom:12px;
+    max-width:none;
+  }
+}
+
+/* Ottimizzazione specifica per iPhone / schermi piccoli */
+@media(max-width:700px){
+
+  body{
+    padding:9px;
+  }
+
+  .card{
+    padding:12px;
+    margin-bottom:12px;
+  }
+
+  .top{
+    align-items:flex-start;
+  }
+
+  .top > div:last-child{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+
+  .tabs,
+  .controls{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:6px;
+  }
+
+  .tabs button,
+  .controls button{
+    flex:0 0 auto;
+    white-space:nowrap;
+  }
+
+  h1{
+    font-size:22px;
+  }
+
+  h2{
+    font-size:18px;
+    margin-bottom:8px;
+  }
+
+  .stat strong{
+    font-size:22px;
+  }
+
+  th,
+  td{
+    padding:9px 7px;
+    font-size:12px;
+  }
+
+  .badge{
+    padding:7px 9px;
+    font-size:12px;
+    min-width:62px;
+  }
+
+  #plannerContainer table,
+  #staffContainer table{
+    min-width:820px;
+  }
+
+  #plannerContainer th:first-child,
+  #plannerContainer td:first-child,
+  #staffContainer th:first-child,
+  #staffContainer td:first-child{
+    min-width:128px;
+    max-width:128px;
+  }
+
+  .dot{
+    width:10px;
+    height:10px;
+  }
+
+  .small{
+    font-size:11px;
+  }
+}
+.login-wrap{
+  position:relative;
+  z-index:20;
+}
+
+.login-card input,
+.login-card button{
+  font-size:16px;
+}
 </style>
 </head>
 <body>
 
 <div id="loginPage" class="login-wrap">
   <div class="card login-card">
-    <h1>⚓ Marina Porto Antico</h1>
-    <div class="sub">Accesso gestionale turni CLOUD</div>
-    <label>Username</label>
-    <input id="username" placeholder="username">
-    <br><br>
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
-    <br><br>
-    <button class="primary" style="width:100%" onclick="login()">Entra</button>
-    <div id="loginError" class="alert hidden" style="margin-top:14px; color:red">Login errato</div>
+    <form onsubmit="login(); return false;">
+      <h1>⚓ Marina Porto Antico</h1>
+      <div class="sub">Accesso gestionale turni CLOUD</div>
+
+      <label>Username</label>
+      <input 
+        id="username" 
+        placeholder="username"
+        autocomplete="username"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false"
+        inputmode="text">
+
+      <br><br>
+
+      <label>Password</label>
+      <input 
+        id="password" 
+        type="password" 
+        placeholder="Password"
+        autocomplete="current-password"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false">
+
+      <br><br>
+
+      <button type="submit" class="primary" style="width:100%">Entra</button>
+
+      <div id="loginError" class="alert hidden" style="margin-top:14px; color:red">Login errato</div>
+    </form>
   </div>
 </div>
 
