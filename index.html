@@ -1248,17 +1248,31 @@ function renderRequests(){
                  ? state.requests 
                  : state.requests.filter(r => r.employeeId === state.currentUser.employeeId);
 
-    if(!list || list.length === 0) { cont.innerHTML = "<div class='small'>Nessuna richiesta trovata.</div>"; return; }
+    if(!list || list.length === 0) { 
+        cont.innerHTML = "<div class='small'>Nessuna richiesta trovata.</div>"; 
+        return; 
+    }
     
     cont.innerHTML = list.map(r=>`
         <div class="request-item">
             <b>${r.type}</b> - ${employeeName(r.employeeId)}<br>
             <small>Dal ${formatDateIT(r.from)} al ${formatDateIT(r.to)}</small><br>
+            ${r.note ? `<small>Note: ${r.note}</small><br>` : ''}
+
             <span class="badge ${r.status==='Approvata'?'ok':(r.status==='Respinta'?'bad':'warn')}">${r.status}</span>
+
             ${state.currentUser.role==='manager' && r.status==='In attesa' ? `
                 <div style="margin-top:8px">
                     <button class="green" style="padding:4px 8px; font-size:11px" onclick="approveReq(${r.id}, 'Approvata')">Approva</button>
                     <button class="red" style="padding:4px 8px; font-size:11px" onclick="approveReq(${r.id}, 'Respinta')">Respingi</button>
+                </div>
+            `:''}
+
+            ${state.currentUser.role==='manager' ? `
+                <div style="margin-top:8px">
+                    <button class="red" style="padding:4px 8px; font-size:11px" onclick="deleteRequest(${r.id})">
+                        Cancella
+                    </button>
                 </div>
             `:''}
         </div>
@@ -1282,7 +1296,21 @@ async function approveReq(id, status){
 
     await save();
 }
+async function deleteRequest(id){
+    if(!state.currentUser || state.currentUser.role !== 'manager') return;
 
+    const r = state.requests.find(x => x.id === id);
+    if(!r) return;
+
+    if(!confirm(`Cancellare questa richiesta?\n\n${r.type} - ${employeeName(r.employeeId)}\nDal ${formatDateIT(r.from)} al ${formatDateIT(r.to)}`)){
+        return;
+    }
+
+    state.requests = state.requests.filter(x => x.id !== id);
+
+    await save('requests');
+    toast("Richiesta cancellata ✅");
+}
 // --- ALTRE FUNZIONI ---
 async function submitSick(){
     const empId = document.getElementById('sickEmployee').value;
@@ -1300,7 +1328,44 @@ async function submitSick(){
 
 function renderSick(){
     const cont = document.getElementById('sickList');
-    cont.innerHTML = state.sick.map(s=>`<div class="request-item"><b>${employeeName(s.empId)}</b>: ${formatDateIT(s.from)} al ${formatDateIT(s.to)}</div>`).join('');
+
+    const list = (state.currentUser.role === 'manager')
+        ? state.sick
+        : state.sick.filter(s => s.empId === state.currentUser.employeeId);
+
+    if(!list || list.length === 0){
+        cont.innerHTML = "<div class='small'>Nessuna malattia registrata.</div>";
+        return;
+    }
+
+    cont.innerHTML = list.map((s, index)=>`
+        <div class="request-item">
+            <b>${employeeName(s.empId)}</b>: ${formatDateIT(s.from)} al ${formatDateIT(s.to)}
+
+            ${state.currentUser.role === 'manager' ? `
+                <div style="margin-top:8px">
+                    <button class="red" style="padding:4px 8px; font-size:11px" onclick="deleteSick(${index})">
+                        Cancella
+                    </button>
+                </div>
+            `:''}
+        </div>
+    `).join('');
+}
+async function deleteSick(index){
+    if(!state.currentUser || state.currentUser.role !== 'manager') return;
+
+    const s = state.sick[index];
+    if(!s) return;
+
+    if(!confirm(`Cancellare questa malattia?\n\n${employeeName(s.empId)}\nDal ${formatDateIT(s.from)} al ${formatDateIT(s.to)}`)){
+        return;
+    }
+
+    state.sick.splice(index, 1);
+
+    await save('sick');
+    toast("Malattia cancellata ✅");
 }
 
 async function saveServiceNote(){
